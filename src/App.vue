@@ -48,7 +48,7 @@
         return;
       }
       // if there's no room in the clicked bottle, do nothing
-      if (isPourable(b)) {
+      if (!isPourable(b)) {
         return;
       }
       // put top of lifted bottle's stack into clicked bottle and unlift
@@ -71,7 +71,7 @@
   function isPourable(b: number) {
     if (state.liftedBottle !== null) {
       if (!isComplete(b)) {
-        return state.contents[b].length >= state.bottleSize;
+        return state.contents[b].length < state.bottleSize;
       }
     }
     return false;
