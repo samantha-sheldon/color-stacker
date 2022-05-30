@@ -6,6 +6,7 @@
     contents: Array<Array<number>>,
     liftedBottle: null | number,
     bottleSize: number,
+    newBottleSize: number,
     bottlesPerColor: number,
     numColors: number,
     playerMoves: number,
@@ -28,11 +29,12 @@
     contents: [],
     liftedBottle: null,
     bottleSize: 4,
+    newBottleSize: 4,
     bottlesPerColor: 2,
     numColors: 4,
     playerMoves: 0,
     wonGame: false,
-    showGame: true
+    showGame: false
   });
 
   function clickBottle(b: number) {
@@ -62,7 +64,7 @@
   }
 
   function isLiftable(b: number) {
-    if (state.contents[b].length > 0) {
+    if (state.contents[b].length > 0 && state.liftedBottle == null) {
       return !isComplete(b);
     }
     return false;
@@ -93,7 +95,7 @@
     // hide the game so there's no awkward popping
     state.showGame = false;
     // generate contents based on the puzzle parameters
-    // TODO: optimize this
+    state.bottleSize = state.newBottleSize;
     // first, make an array of all the contents, not sorted into bottles
     let items: Array<number> = [];
     for (let ii = 0; ii < state.numColors; ii++) {
@@ -110,7 +112,11 @@
     // TODO: shuffle around so there might not be an empty bottle at the start
     state.contents = [];
     for (let ii = 0; ii < state.bottlesPerColor * state.numColors; ii++) {
-      state.contents[ii] = items.slice(ii * state.bottleSize, (ii * state.bottleSize) + state.bottleSize);
+      let endSlice = (ii * state.bottleSize) + state.bottleSize;
+      if (endSlice > items.length) {
+        endSlice = items.length;
+      }
+      state.contents[ii] = items.slice(ii * state.bottleSize, endSlice);
     }
     state.contents.push([]);
     // reset the remaining game data and reshow the game
@@ -129,10 +135,11 @@
   <div class="container mx-auto flex flex-col min-h-screen bg-white gap-4 p-4 pb-8 w-fit">
     <h1 class="text-3xl text-orange-800 font-bold">Color Stacker</h1>
     <p>Pour the colored liquids from one bottle to another until all but one bottle is filled to the top with a single color.</p>
+    <p>Click a bottle to lift it, and click another to pour into it. If you click the currently lifted bottle, you'll put it down.</p>
     <div class="flex flex-col gap-4 w-fit mx-auto">
       <div class="grid grid-cols-2 gap-4">
-        <!--<label for="bottleSize" class="text-right py-1">Bottle Size:</label>
-        <input name="bottleSize" class="border border-gray-300 pl-2 pr-px py-1" type="number" step="1" min="2" v-model="state.bottleSize" />-->
+        <label for="bottleSize" class="text-right py-1">Bottle Size:</label>
+        <input name="bottleSize" class="border border-gray-300 pl-2 pr-px py-1" type="number" step="1" min="2" v-model="state.newBottleSize" />
         <label for="numColors" class="text-right py-1"># of Colors:</label>
         <input name="numColors" class="border border-gray-300 pl-2 pr-px py-1" type="number" step="1" min="2" :max="colors.length" v-model="state.numColors" />
         <label for="bottlesPerColor" class="text-right py-1"># of Bottles per Color:</label>

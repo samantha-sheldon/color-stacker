@@ -20,7 +20,7 @@
     }
   });
   const liftableClass = computed(() => {
-    if (props.liftable || props.pourable) {
+    if (props.liftable || props.pourable || props.lifted) {
       return 'cursor-pointer';
     }
     return 'cursor-default';
